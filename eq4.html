@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equinomics Research</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        header {
+            background-color: #1a202c;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .ticker {
+            background-color: #2d3748;
+            color: white;
+            padding: 10px;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            border-bottom: 1px solid #1a202c;
+        }
+        .pills-container {
+            position: sticky;
+            top: 80px; /* Adjust according to the height of the header */
+            z-index: 1000;
+            background-color: #f0f2f5;
+            padding: 10px;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .pills {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: left;
+        }
+        .pill {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #1a202c;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .pill img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .pill:hover, .pill.active {
+            background-color: #3182ce;
+            color: white;
+        }
+        .section {
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        .media-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 10px;
+            padding: 10px 0;
+        }
+        .media-carousel div {
+            flex: none;
+            scroll-snap-align: start;
+            background-color: #ffffff;
+            border-radius: 10px;
+            margin: 5px;
+            padding: 20px;
+            min-width: 250px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .media-carousel div:hover {
+            transform: scale(1.05);
+        }
+        .media-carousel iframe {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .subscription-button {
+            display: inline-block;
+            text-align: center;
+            padding: 10px 15px;
+            background-color: #3182ce;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+        .subscription-button:hover {
+            background-color: #2b6cb0;
+        }
+        .subscription-page {
+            display: none;
+        }
+        .subscription-bundles {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+        }
+        .bundle {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            min-width: 200px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .bundle:hover {
+            transform: scale(1.05);
+        }
+        .bundle h4 {
+            margin: 10px 0;
+            color: #2d3748;
+        }
+        .centered-text {
+            text-align: center;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #3182ce;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .trending-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 10px;
+            padding: 10px 0;
+        }
+        .trending-carousel div {
+            flex: none;
+            scroll-snap-align: start;
+            background-color: #ffffff;
+            border-radius: 10px;
+            margin: 5px;
+            padding: 20px;
+            min-width: 250px;
+            max-width: 250px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+            position: relative;
+        }
+        .trending-carousel div:hover {
+            transform: scale(1.05);
+        }
+        .trending-carousel p {
+            margin: 10px 0;
+            text-align: left;
+        }
+        .trending-carousel .subscription-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+        }
+        .trending-carousel .thumbs {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+        }
+        .thumbs-down {
+            color: yellow;
+        }
+        .thumbs-up {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <header onclick="showPage('content', this)">
+        <img src="logo.png" alt="Logo">
+        <h1>Equinomics Research</h1>
+    </header>
+    <div class="ticker">
+        <div id="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+        </div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js">
+        {
+            "symbols": [
+                { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" },
+                { "proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100" },
+                { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" },
+                { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" },
+                { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" }
+            ],
+            "showSymbolLogo": true,
+            "colorTheme": "dark",
+            "isTransparent": false,
+            "displayMode": "regular",
+            "locale": "en"
+        }
+        </script>
+    </div>
+    <div class="pills-container">
+        <div class="pills">
+            <div class="pill" onclick="showPage('content', this)">🏠 Home</div>
+            <div class="pill" onclick="showPage('idea-discovery', this)">💎 Idea Discovery</div>
+            <div class="pill" onclick="showPage('daily-updates', this)">✅ Daily Updates</div>
+            <div class="pill" onclick="showPage('top-equity-ideas', this)">⚡ Top Equity Ideas</div>
+            <div class="pill" onclick="showPage('monthly-outlook', this)">📈 Monthly Outlook</div>
+            <div class="pill" onclick="showPage('media', this)">🖥️ Media</div>
+            <div class="pill" onclick="showPage('learn', this)">📰 Learn</div>
+            <div class="pill" onclick="showPage('podcast', this)">🎧 Podcast</div>
+            <div class="pill" onclick="showPage('subscription-page', this)">📜 Subscription</div>
+                        <div class="pill" onclick="showPage('subscription-page', this)">📞 Contact Us</div>
+        </div>
+    </div>
+    <div id="content" class="container">
+        <div id="about" class="section centered-text">
+            <a href="#subscription-page" class="subscription-button" onclick="showPage('subscription-page', this)">Subscribe Now</a>
+            <p>With 39 years of experience in markets, at Equinomics Research, we provide equity research service to help you make informed investment decisions.</p>
+        </div>
+        <div class="section">
+            <div class="media-carousel">
+                <div>
+                    <iframe src="https://www.youtube.com/embed/oShgiT4Q7JY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <p>REC rallying? find out.</p>
+                </div>
+                <div>
+                    <iframe src="https://www.youtube.com/embed/yxAmtyZ6EAg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <p>Quality stocks up for grab</p>
+                </div>
+                <div>
+                    <iframe src="https://www.youtube.com/embed/7BQEULmRHOU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <p>Chokka's views</p>
+                </div>
+                <div>
+                    <iframe src="https://www.youtube.com/embed/7BQEULmRHOU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <p>Market at a glance</p>
+                </div>
+                <div>
+                    <iframe src="https://www.youtube.com/embed/7BQEULmRHOU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <p>Media Video 5</p>
+                </div>
+                <div>
+                    <iframe src="https://www.youtube.com/embed/7BQEULmRHOU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <p>Media Video 6</p>
+                </div>
+                <div>
+                    <iframe src="https://www.youtube.com/embed/7BQEULmRHOU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <p>Media Video 7</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h4>Trending Stocks Commentary</h4>
+            <div class="trending-carousel">
+                <div>
+                    <p>Name: National Fertilizer Ltd.</p>
+                    <p>Exchange: NSE</p>
+                    <span class="thumbs thumbs-down">👎</span>
+                    <button class="subscription-button">Read More</button>
+                </div>
+                <div>
+                    <p>Name: BBTC</p>
+                    <p>Exchange: BSE</p>
+                    <span class="thumbs thumbs-up">👍</span>
+                    <button class="subscription-button">Read More</button>
+                </div>
+                <div>
+                    <p>Get custom research views for Rs. 5,000 per stock.</p>
+                    <button class="subscription-button">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="idea-discovery" class="container" style="display:none;">
+        <div class="section">
+            <h2>Idea Discovery</h2>
+            <div class="idea-section">
+                <div class="idea-box">
+                    <h4>Dividend Idea</h4>
+                    <p>Stable income through high-dividend stocks.</p>
+                </div>
+                <div class="idea-box">
+                    <h4>Growth Stock</h4>
+                    <p>High potential growth companies.</p>
+                </div>
+                <div class="idea-box">
+                    <h4>Tactical Idea</h4>
+                    <p>Short-term market opportunities.</p>
+                </div>
+                <div class="idea-box">
+                    <h4>Value</h4>
+                    <p>Undervalued stocks with potential upside.</p>
+                </div>
+                <div class="idea-box">
+                    <h4>Wealth Builder</h4>
+                    <p>Long-term investment strategies.</p>
+                </div>
+            </div>
+            <a class="back-button" onclick="showPage('content', this)">Back</a>
+        </div>
+    </div>
+    <div id="subscription-page" class="container subscription-page" style="display:none;">
+        <div class="section">
+            <h2>Subscription Plans</h2>
+            <div class="subscription-bundles">
+                <div class="bundle">
+                    <h4>Basic Plan</h4>
+                    <p>Access to basic equity research reports.</p>
+                    <p>$10/month</p>
+                    <a href="#" class="subscription-button">Subscribe</a>
+                </div>
+                <div class="bundle">
+                    <h4>Standard Plan</h4>
+                    <p>Includes basic plan features plus market analysis.</p>
+                    <p>$20/month</p>
+                    <a href="#" class="subscription-button">Subscribe</a>
+                </div>
+                <div class="bundle">
+                    <h4>Premium Plan</h4>
+                    <p>Includes standard plan features plus investment advisory.</p>
+                    <p>$30/month</p>
+                    <a href="#" class="subscription-button">Subscribe</a>
+                </div>
+                <div class="bundle">
+                    <h4>Ultimate Plan</h4>
+                    <p>All features included plus personal consultation.</p>
+                    <p>$50/month</p>
+                    <a href="#" class="subscription-button">Subscribe</a>
+                </div>
+            </div>
+            <a class="back-button" onclick="showPage('content', this)">Back</a>
+        </div>
+    </div>
+    <div id="contact-us-page" class="container" style="display:none;">
+        <div class="section">
+            <h2>Contact Us</h2>
+            <p>Email: info@example.com</p>
+            <p>Phone: +1-123-456-7890</p>
+            <a class="back-button" onclick="showPage('content', this)">Back</a>
+        </div>
+    </div>
+    <div id="partnerships-page" class="container" style="display:none;">
+        <div class="section">
+            <h2>Partnerships</h2>
+            <p>Learn more about our partnerships and collaborations.</p>
+            <a class="back-button" onclick="showPage('content', this)">Back</a>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 Equity Research Service. All rights reserved.</p>
+    </footer>
+    <script>
+        function showPage(pageId, element) {
+            document.querySelectorAll('.container').forEach(container => {
+                container.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+            
+            document.querySelectorAll('.pill').forEach(pill => {
+                pill.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+
+        document.querySelector('header').addEventListener('click', () => showPage('content', document.querySelector('.pill')));
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.pill').click();
+        });
+    </script>
+</body>
+</html>
